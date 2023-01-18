@@ -1,0 +1,6 @@
+user_timeformat.settings:
+  title: 'User time format settings'
+  parent: system.admin_config_regional
+  description: 'Configure user time format settings'
+  weight: 10
+  route_name: user_timeformat.settings

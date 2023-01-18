@@ -1,0 +1,7 @@
+user_timeformat.settings:
+  path: '/admin/config/user_timeformat/settings'
+  defaults:
+    _form: '\Drupal\user_timeformat\Form\TimeConfigForm'
+    _title: 'User time format settings'
+  requirements:
+    _permission: 'administer site configuration'

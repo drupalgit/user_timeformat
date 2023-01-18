@@ -1,0 +1,4 @@
+services:
+  user_timeformat.current_time:
+    class: Drupal\user_timeformat\CurrentTime
+    arguments: ['@config.factory', '@date.formatter', '@datetime.time']
