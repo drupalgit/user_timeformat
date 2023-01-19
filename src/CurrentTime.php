@@ -52,15 +52,25 @@ class CurrentTime {
    * Show the author of the node.
    */
   public function timeFormate() {
+    // Get the config form settings.
     $user_timeformat = $this->configFactory->get('user_timeformat.settings');
-    $country = $user_timeformat->get('country');
-    $city = $user_timeformat->get('city');
-    $timezone = $user_timeformat->get('timezone');
-    $formatted = $this->dateFormatService->format(
-      $this->timeService->getCurrentTime(), 'custom', 'jS M Y - h:i A', $timezone
+    $timezone = !empty($user_timeformat->get('timezone')) ? $user_timeformat->get('timezone') : 'Asia/Kolkata';
+    $time_format = !empty($user_timeformat->get('time')) ? $user_timeformat->get('time') : 'h:i a';
+    $date_format = !empty($user_timeformat->get('date')) ? $user_timeformat->get('date') : 'l, j F Y';
+    // Get the current time stamp value.
+    $time_stamp = $this->timeService->getCurrentTime();
+    // Let's Format the time & date as required.
+    $time_formatted = $this->dateFormatService->format(
+      $time_stamp, 'custom', $time_format, $timezone
+    );
+    $date_formatted = $this->dateFormatService->format(
+      $time_stamp, 'custom', $date_format, $timezone
     );
 
-    return $formatted;
+    return [
+      'time_format' => $time_formatted,
+      'date_format' => $date_formatted,
+    ];
   }
 
 }

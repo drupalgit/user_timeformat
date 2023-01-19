@@ -1,15 +1,21 @@
 <?php
 
 /**
+ * @file
+ * Custom hooks.
+ */
+
+/**
  * Implements hook_theme().
  */
 function user_timeformat_theme($existing, $type, $theme, $path) {
-	return [
-    'custom_timeformat' => [
+  return [
+    'user_timeformat' => [
       'variables' => [
         'time' => NULL,
         'date' => NULL,
-        'location' => NULL
+        'country' => NULL,
+        'city' => NULL,
       ],
     ],
   ];

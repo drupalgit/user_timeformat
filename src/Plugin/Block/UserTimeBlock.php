@@ -7,12 +7,9 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\user_timeformat\CurrentTime;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Datetime\DateFormatterInterface;
-use Drupal\Core\Cache\Cache;
 
 /**
- * Provides a 'Hello' Block.
+ * Provides a 'Uset time' Block.
  *
  * @Block(
  *   id = "user_time_block",
@@ -32,25 +29,13 @@ class UserTimeBlock extends BlockBase implements ContainerFactoryPluginInterface
   /**
    * The time interface.
    *
-   * @var CurrentTime
+   * @var currentTime
    */
   protected $currentTime;
 
   /**
-   * The time interface.
+   * The params used.
    *
-   * @var TimeInterface
-   */
-  protected $timeService;
-
-  /**
-   * The Date formater.
-   *
-   * @var DateFormatterInterface
-   */
-  protected $dateFormatService;
-
-  /**
    * @param array $configuration
    *   The configuration object.
    * @param string $plugin_id
@@ -59,13 +44,13 @@ class UserTimeBlock extends BlockBase implements ContainerFactoryPluginInterface
    *   The plugin_definition.
    * @param \Drupal\Core\Session\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Drupal\Core\Session\CurrentTime $current_time
+   *   The current time service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, CurrentTime $current_time, TimeInterface $time_service, DateFormatterInterface $date_format) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, CurrentTime $current_time) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
-    $this->CurrentTime = $current_time;
-    $this->timeService = $time_service;
-    $this->dateFormatService = $date_format;
+    $this->currentTime = $current_time;
   }
 
   /**
@@ -78,8 +63,6 @@ class UserTimeBlock extends BlockBase implements ContainerFactoryPluginInterface
       $plugin_definition,
       $container->get('config.factory'),
       $container->get('user_timeformat.current_time'),
-      $container->get('datetime.time'),
-      $container->get('date.formatter')
     );
   }
 
@@ -87,32 +70,32 @@ class UserTimeBlock extends BlockBase implements ContainerFactoryPluginInterface
    * {@inheritdoc}
    */
   public function build() {
-    //$format = \Drupal::service('user_timeformat.current_time')->timeFormate();
-    $format = $this->CurrentTime->timeFormate();
     $time = '';
     $date = '';
-    $location = '';
+    $country = '';
     $city = '';
-
+    // Get the config form values.
     $user_timeformat = $this->configFactory->get('user_timeformat.settings');
-    $country = $user_timeformat->get('country');
-    $city = $user_timeformat->get('city');
-    $timezone = $user_timeformat->get('timezone');
-
-    if ($format) {
-      $time = $this->dateFormatService->format($this->timeService->getCurrentTime(), 'custom', 'h:i A', $timezone);
-      $date = $this->dateFormatService->format($this->timeService->getCurrentTime(), 'custom', 'l j F Y', $timezone);
+    $country = !empty($user_timeformat->get('country')) ? $user_timeformat->get('country') : '';
+    $city = !empty($user_timeformat->get('city')) ? $user_timeformat->get('city') . ", " : '';
+    // Get current time & date format.
+    $service_format = $this->currentTime->timeFormate();
+    if ($service_format) {
+      $time = $service_format['time_format'];
+      $date = $service_format['date_format'];
     }
     $build = [
-      '#theme' => 'custom_timeformat',
+      '#theme' => 'user_timeformat',
       '#time' => $time,
       '#date' => $date,
-      '#location' => $city . ", " . $country,
+      '#country' => $country,
+      '#city' => $city,
       '#cache' => [
         'tags' => $this->getCacheTags(),
         'max-age' => $this->getCacheMaxAge()
       ],
     ];
+
     return $build;
   }
 
@@ -120,13 +103,14 @@ class UserTimeBlock extends BlockBase implements ContainerFactoryPluginInterface
    * {@inheritdoc}
    */
   public function getCacheTags() {
-    return ['config:user_timeformat.settings' ];
+    return ['config:user_timeformat.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheMaxAge() {
-    return 30;
+    return 59;
   }
+
 }

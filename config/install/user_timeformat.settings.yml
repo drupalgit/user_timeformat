@@ -1,3 +1,5 @@
 country: India
 city: Indore
 timezone: Asia/Kolkata
+time: 'h:i a'
+date: 'l, j F Y'
