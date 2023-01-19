@@ -1,0 +1,17 @@
+{#
+/**
+ * @file
+ * Custom template for the 'time, date and location' formatter.
+ *
+ * Available variables:
+ *   - time: Time format.
+ *   - date: Date format.
+ *   - city: City name.
+ *   - country: Country name.
+ * See user_timeformat_theme() function.
+ */
+#}
+
+<h1 class="time"> {{ time }} </h1>
+<p class="date"> {{ date }} <br />
+<span class="location"> {{ 'Time in '|t }} {{ city }} {{ country }} </span></p>

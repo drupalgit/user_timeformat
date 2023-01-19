@@ -9,7 +9,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\user_timeformat\CurrentTime;
 
 /**
- * Provides a 'Uset time' Block.
+ * Provides a 'User time' Block.
  *
  * @Block(
  *   id = "user_time_block",
